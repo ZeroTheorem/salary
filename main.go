@@ -13,10 +13,20 @@ var (
 	totalMsg = `
 🥳
 
+<b>Работа</b>
+
 Всего: <b>%v</b>
 Премия: <b>%v</b>
 Аванс: <b>%v</b>
 Зарплата: <b>%v</b>
+
+<b>Вклады</b>
+
+Всего: <b>%v</b>
+
+-------------------
+
+Итого: <b>%v</b>
 `
 	configMsg = `
 Ставка за этот месяц: %v
@@ -38,6 +48,7 @@ type config struct {
 	bonusPercent        float64
 	coachBonus          float64
 	internetBonus       float64
+	depositPercent      float64
 }
 
 func main() {
@@ -71,6 +82,7 @@ func main() {
 	bonusPercentBtn := settingsMenu.Data("Премия", "bonusPercent")
 	coachBonusBtn := settingsMenu.Data("Премия наставника", "coachBonus")
 	internetBonusBtn := settingsMenu.Data("Компенсация за интернет", "internetBonus")
+	depositPercentBtn := settingsMenu.Data("Проценты по вкладу", "depositPercent")
 	previousBtn := settingsMenu.Data("Назад", "previous")
 	settingsMenu.Inline(
 		settingsMenu.Row(currentPerHourBtn),
@@ -81,6 +93,7 @@ func main() {
 		settingsMenu.Row(coachBonusBtn),
 		settingsMenu.Row(internetBonusBtn),
 		settingsMenu.Row(previousBtn),
+		settingsMenu.Row(depositPercentBtn),
 	)
 
 	//-----------Initial config------------------
@@ -135,6 +148,10 @@ func main() {
 		option = c.Callback().Unique
 		return c.Send("Введите значение")
 	})
+	b.Handle(&depositPercentBtn, func(c tele.Context) error {
+		option = c.Callback().Unique
+		return c.Send("Введите значение")
+	})
 	b.Handle(tele.OnText, func(c tele.Context) error {
 		val := c.Message().Text
 		ival, err := strconv.ParseFloat(val, 64)
@@ -172,6 +189,11 @@ func main() {
 			cfg.internetBonus = ival
 			option = ""
 			return c.Send(createConfigMsg(cfg), settingsMenu)
+		case "depositPercent":
+			cfg.depositPercent = ival
+			option = ""
+			return c.Send(createConfigMsg(cfg), settingsMenu)
+
 		default:
 			return c.Send("Выберите нужную опицию", settingsMenu)
 		}
@@ -191,14 +213,17 @@ func calculateSalary(cfg *config, ac *accounting.Accounting) string {
 	bonus := previousMonthWithTax*cfg.bonusPercent/100 + cfg.coachBonus
 	salary := previousMonthWithTax*60/100 + cfg.internetBonus
 	avance := currentMonthWithTax * 40 / 100
-	total := salary + avance + bonus
-
+	totalsalary := salary + avance + bonus
+	total := totalsalary + cfg.depositPercent
 	msg := fmt.Sprintf(
 		totalMsg,
-		ac.FormatMoney(total),
+		ac.FormatMoney(totalsalary),
 		ac.FormatMoney(bonus),
 		ac.FormatMoney(avance),
-		ac.FormatMoney(salary))
+		ac.FormatMoney(salary),
+		ac.FormatMoney(cfg.depositPercent),
+		ac.FormatMoney(total),
+	)
 	return msg
 }
 
