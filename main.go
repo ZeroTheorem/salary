@@ -14,17 +14,16 @@ var (
 🥳
 
 <b>Работа</b>
-
-Всего: <b>%v</b>
 Премия: <b>%v</b>
 Аванс: <b>%v</b>
 Зарплата: <b>%v</b>
 
-<b>Вклады</b>
-
 Всего: <b>%v</b>
 
--------------------
+<b>Вклады</b>
+Всего: <b>%v</b>
+
+----------------------------
 
 Итого: <b>%v</b>
 `
@@ -36,6 +35,7 @@ var (
 Премия: %v%%
 Премия наставника: %v
 Компенсация за интернет: %v
+Проценты по вкладу: %v
 `
 	option string
 )
@@ -92,8 +92,8 @@ func main() {
 		settingsMenu.Row(bonusPercentBtn),
 		settingsMenu.Row(coachBonusBtn),
 		settingsMenu.Row(internetBonusBtn),
-		settingsMenu.Row(previousBtn),
 		settingsMenu.Row(depositPercentBtn),
+		settingsMenu.Row(previousBtn),
 	)
 
 	//-----------Initial config------------------
@@ -235,5 +235,7 @@ func createConfigMsg(cfg *config) string {
 		cfg.previousCountShifts,
 		cfg.bonusPercent,
 		cfg.coachBonus,
-		cfg.internetBonus)
+		cfg.internetBonus,
+		cfg.depositPercent,
+	)
 }
