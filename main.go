@@ -11,9 +11,12 @@ import (
 
 var (
 	totalMsg = `
-🥳
+Доход за текущий месяц составил:
 
-<b>Работа</b>
+<b>%v</b>
+
+----------------------------
+<b>Яндекс</b>
 Премия: <b>%v</b>
 Аванс: <b>%v</b>
 Зарплата: <b>%v</b>
@@ -24,8 +27,6 @@ var (
 Всего: <b>%v</b>
 
 ----------------------------
-
-Итого: <b>%v</b>
 `
 	configMsg = `
 Ставка за этот месяц: %v
@@ -78,7 +79,7 @@ func main() {
 	currentPerHourBtn := settingsMenu.Data("Ставка за этот месяц", "currentPerHour")
 	previousPerHourBtn := settingsMenu.Data("Cтавка за прошлый месяц", "previousPerHour")
 	currentCountShiftsBtn := settingsMenu.Data("Кол-во смен за этот месяц", "currentCountShifts")
-	previousCountShiftsBtn := settingsMenu.Data("Кол-во смен за предыдущий месяц", "previousCountShifts")
+	previousCountShiftsBtn := settingsMenu.Data("Кол-во смен за прошлый месяц", "previousCountShifts")
 	bonusPercentBtn := settingsMenu.Data("Премия", "bonusPercent")
 	coachBonusBtn := settingsMenu.Data("Премия наставника", "coachBonus")
 	internetBonusBtn := settingsMenu.Data("Компенсация за интернет", "internetBonus")
@@ -217,12 +218,12 @@ func calculateSalary(cfg *config, ac *accounting.Accounting) string {
 	total := totalsalary + cfg.depositPercent
 	msg := fmt.Sprintf(
 		totalMsg,
-		ac.FormatMoney(totalsalary),
+		ac.FormatMoney(total),
 		ac.FormatMoney(bonus),
 		ac.FormatMoney(avance),
 		ac.FormatMoney(salary),
+		ac.FormatMoney(totalsalary),
 		ac.FormatMoney(cfg.depositPercent),
-		ac.FormatMoney(total),
 	)
 	return msg
 }
